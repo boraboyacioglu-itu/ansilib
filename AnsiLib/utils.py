@@ -80,7 +80,7 @@ def style(*styles: Union[int, Callable[[str, bool], str], str], p: bool = False)
         else:
             if sty not in CHARS.keys():
                 raise ValueError(f"Style '{sty}' is not recognized.")
-            codes.append(str(CHARS[sty]))
+            codes.append(str(CHARS[str(sty).lower()]))
     
     codes = [sand(c) for c in codes]
     

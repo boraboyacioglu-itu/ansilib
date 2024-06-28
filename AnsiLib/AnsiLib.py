@@ -1,9 +1,10 @@
+import sys
 from typing import Callable, Dict, List, Optional, Union
 
 # Import literal type for different versions of Python.
-try:
+if sys.version_info >= (3, 8):
     from typing import Literal
-except ImportError:
+else:
     from typing_extensions import Literal
 
 from .chars import CHARS
