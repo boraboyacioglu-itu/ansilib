@@ -16,12 +16,18 @@ def apply(text: str, *codes: str) -> str:
 def style(*styles: str) -> lambda text: str:
     """ Returns a function that applies the given styles to the text. """
 
+    if not styles:
+        # No styles were given.
+        return lambda text: text
+
     # Get the ANSI escape sequences for the given styles.
     codes = [
         sand(
-            sty[4:] if sty.startswith('CODE')
-            else CHARS[sty]
+            sty if isinstance(sty, int)             # The integer value
+            else sty[4:] if sty.startswith('CODE')  # Predefined code
+            else CHARS[sty]                         # User-input style
         ) for sty in styles
     ]
     
+    # Return the lambda function responsible for applying those styles.
     return lambda text: apply(text, *codes)

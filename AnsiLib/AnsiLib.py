@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import List
+from typing import Literal
 
 from .chars import CHARS
 
@@ -28,7 +29,7 @@ m = style('m')
 cy = style('c')
 w = style('w')
 
-def available() -> Dict[int, str]:
+def available() -> List[str]:
     """ Returns the available styles. """
 
     # Get the available styles.
@@ -50,3 +51,37 @@ def color(r: int, g: int, b: int, type: str = 'fg') -> str:
     code = f'CODE{type};2;{r};{g};{b}'
     
     return code
+
+def prints(
+    *values: object,
+    style: List[str] | callable | None = None,
+    sep: str | None = " ",
+    end: str | None = "\n",
+    file = None,
+    flush: Literal[False] = False
+) -> None:
+    """ Prints the given values with the given style. """
+
+    # Get the style.
+    style_ = None
+
+    if not style:
+        # No style was given.
+        style_ = globals()['style']()
+    elif isinstance(style, list) or isinstance(style, tuple) or isinstance(style, set):
+        # The style is an array.
+        style_ = globals()['style'](*style)
+    elif callable(style):
+        # The style is a function.
+        style_ = style
+    else:
+        # Invalid style.
+        raise TypeError('Style must be an array or a function.')
+
+    # Apply the style.
+    text = style_(
+        sep.join([str(v) for v in values])
+    )
+
+    # Print the text.
+    print(text, end=end, file=file, flush=flush)
