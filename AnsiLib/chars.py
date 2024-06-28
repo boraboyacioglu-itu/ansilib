@@ -20,7 +20,7 @@ CHARS = {
     'no_conceal': 28,
     'no_crossed': 29,
 
-    # FOREGROUND COLOURS
+    # FOREGROUND COLORS
     'black_t0': 30, 'kt0': 30, 'black': 30, 'k': 30,
     'red_t0': 31, 'rt0': 31, 'red': 31, 'r': 31,
     'green_t0': 32, 'gt0': 32, 'green': 32, 'g': 32,
@@ -31,7 +31,7 @@ CHARS = {
     'white_t0': 37, 'wt0': 37, 'white': 37, 'w': 37,
     'default_t0': 39, 'dt0': 39,
 
-    # BACKGROUND COLOURS
+    # BACKGROUND COLORS
     'black_b0': 40, 'kb0': 40, 'kb': 40,
     'red_b0': 41, 'rb0': 41, 'rb': 41,
     'green_b0': 42, 'gb0': 42, 'gb': 42,
@@ -42,7 +42,7 @@ CHARS = {
     'white_b0': 47, 'wb0': 47, 'wb': 47,
     'default_b0': 49, 'db0': 49,
 
-    # BRIGHT FOREGROUND COLOURS
+    # BRIGHT FOREGROUND COLORS
     'black_t1': 90, 'kt1': 90,
     'red_t1': 91, 'rt1': 91,
     'green_t1': 92, 'gt1': 92,
@@ -52,7 +52,7 @@ CHARS = {
     'cyan_t1': 96, 'ct1': 96,
     'white_t1': 97, 'wt1': 97,
 
-    # BRIGHT BACKGROUND COLOURS
+    # BRIGHT BACKGROUND COLORS
     'black_b1': 100, 'kb1': 100,
     'red_b1': 101, 'rb1': 101,
     'green_b1': 102, 'gb1': 102,

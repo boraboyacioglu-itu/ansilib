@@ -1,7 +1,7 @@
 from .utils import style
 
 class color:
-    # Text colours.
+    # Text colors.
     class t:
         k = style('kt0')
         r = style('rt0')
@@ -13,7 +13,7 @@ class color:
         w = style('wt0')
         d = style('dt0')
 
-    # Background colours.
+    # Background colors.
     class b:
         k = style('kb0')
         r = style('rb0')
@@ -25,7 +25,7 @@ class color:
         w = style('wb0')
         d = style('db0')
 
-    # Bright text colours.
+    # Bright text colors.
     class t_:
         k = style('kt1')
         r = style('rt1')
@@ -36,7 +36,7 @@ class color:
         c = style('ct1')
         w = style('wt1')
 
-    # Bright background colours.
+    # Bright background colors.
     class b_:
         k = style('kb1')
         r = style('rb1')

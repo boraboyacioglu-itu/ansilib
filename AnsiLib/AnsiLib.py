@@ -1,9 +1,8 @@
-from typing import List
-from typing import Literal
+from typing import Callable, Dict, List, Literal, Optional, Union
 
 from .chars import CHARS
 
-# Colours class.
+# Colors class.
 from .color import color as c
 
 # Styling function.
@@ -20,7 +19,7 @@ x = style('x')
 du = style('du')
 rev = style('rev')
 
-# Quick colours.
+# Quick colors.
 r = style('r')
 g = style('g')
 y = style('y')
@@ -30,45 +29,80 @@ cy = style('c')
 w = style('w')
 
 def available() -> List[str]:
-    """ Returns the available styles. """
+    """ Returns the available styles.
+
+    Returns:
+        List[str]: The available styles.
+    """
 
     # Get the available styles.
-    ints: dict = {v: None for v in set(CHARS.values())}
+    ints: Dict[int, str] = {v: '' for v in set(CHARS.values())}
     for sty in CHARS.keys():
         i: int = CHARS[sty]
         if i in ints.keys() and not ints[i]:
             ints[i] = sty
     
-    names = list(ints.values())
-    return names
+    return list(ints.values())
 
-def color(r: int, g: int, b: int, type: str = 'fg') -> str:
-    """ Returns the ANSI escape sequence for the given RGB colour. """
+def color(r: int, g: int, b: int, type: Literal['fg', 'bg'] = 'fg') -> str:
+    """ Returns the ANSI escape sequence for the given RGB color.
+    
+    Args:
+        r (int): The red value.
+        g (int): The green value.
+        b (int): The blue value.
+        type (str): The type of color. (defaults to 'fg')
+
+    Returns:
+        str: The ANSI escape sequence.
+    """
+
+    # Check if the type is valid.
+    if type not in ['fg', 'bg']:
+        raise ValueError("Type must be 'fg' (foreground) or 'bg' (background).")
+
+    # Check if the RGB values are all integers.
+    if not all(isinstance(v, int) for v in [r, g, b]):
+        raise TypeError("RGB values must be integers.")
+    
+    # Check if the RGB values are in the range 0-255.
+    if not all(0 <= v <= 255 for v in [r, g, b]):
+        raise ValueError("RGB values must be in the range 0-255.")
+
     # Set the type.
-    type = '38' if type == 'fg' else '48'
+    type_: Literal['38', '48'] = '38' if type == 'fg' else '48'
     
     # Generate the ANSI escape sequence.
-    code = f'CODE{type};2;{r};{g};{b}'
+    code: str = f'CODE{type_};2;{r};{g};{b}'
     
     return code
 
 def prints(
     *values: object,
-    style: List[str] | callable | None = None,
-    sep: str | None = " ",
-    end: str | None = "\n",
+    style: Optional[Union[List[str], Callable[[str, bool], str]]] = None,
+    sep: str = ' ',
+    end: str = '\n',
     file = None,
-    flush: Literal[False] = False
+    flush: bool = False
 ) -> None:
-    """ Prints the given values with the given style. """
+    """ Prints the given values with the given style. Sends the output to Python's print function.
 
-    # Get the style.
-    style_ = None
+    Args:
+        *values (object): The values to print.
+        style (Optional[Union[List[str], Callable[[str, bool], str]]]): The style to apply to the text. (defaults to None)
+        sep [str]: The separator between the values. (defaults to " ")
+        end [str]: The end character. (defaults to '\n')
+        file: The file to write to. (defaults to None)
+        flush (bool): Whether to flush the output. (defaults to False)
+    """
+
+    # Set the style to empty function.
+    style_: Callable[[str, bool], str] = globals()['style']()
 
     if not style:
         # No style was given.
-        style_ = globals()['style']()
-    elif isinstance(style, list) or isinstance(style, tuple) or isinstance(style, set):
+        pass
+    elif type(style) in [list, tuple, set, str]:
         # The style is an array.
         style_ = globals()['style'](*style)
     elif callable(style):
@@ -79,9 +113,7 @@ def prints(
         raise TypeError('Style must be an array or a function.')
 
     # Apply the style.
-    text = style_(
-        sep.join([str(v) for v in values])
-    )
+    text: str = style_(sep.join([str(v) for v in values]))
 
     # Print the text.
-    print(text, end=end, file=file, flush=flush)
+    print(text, sep=sep, end=end, file=file, flush=flush)
