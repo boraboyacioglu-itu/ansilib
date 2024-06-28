@@ -9,7 +9,7 @@ if sys.version_info < (3, 8):
 with open('README.md', 'r') as f:
     long_description = f.read()
 
-with open('LICENCE.txt', 'r') as f:
+with open('LICENSE.txt', 'r') as f:
     licence = f.read()
 
 setup(
