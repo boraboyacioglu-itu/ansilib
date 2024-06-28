@@ -9,7 +9,8 @@ except ImportError:
 from .chars import CHARS
 
 # Colors class.
-from .color import color as c
+from .color import color
+c = color
 
 # Styling function.
 from .utils import style
