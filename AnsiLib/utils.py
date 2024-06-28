@@ -4,7 +4,7 @@ import warnings
 from .chars import CHARS
 
 # Returns the ANSI escape sequence for the given code.
-sand: Callable[[int], str] = lambda code: '\x1b[' + str(code) + 'm'
+sand: Callable[[object], str] = lambda code: '\x1b[' + str(code) + 'm'
 
 def apply(text: object, *codes: str, p: bool = False) -> Optional[str]:
     """ Applies the given styles to the text.
@@ -60,7 +60,7 @@ def style(*styles: Union[int, Callable[[str, bool], str], str], p: bool = False)
         if isinstance(sty, int):
             if sty not in CHARS.values():
                 warnings.warn("Style with escape code " + sty + " may not be recognized.", UserWarning)
-            codes.append(sty)
+            codes.append(str(sty))
 
         elif callable(sty):
             # Remove sty from the styles.
@@ -80,7 +80,7 @@ def style(*styles: Union[int, Callable[[str, bool], str], str], p: bool = False)
         else:
             if sty not in CHARS.keys():
                 raise ValueError(f"Style '{sty}' is not recognized.")
-            codes.append(CHARS[sty])
+            codes.append(str(CHARS[sty]))
     
     codes = [sand(c) for c in codes]
     

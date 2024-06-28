@@ -1,4 +1,10 @@
-from typing import Callable, Dict, List, Literal, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
+
+# Import literal type for different versions of Python.
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 from .chars import CHARS
 
@@ -79,7 +85,7 @@ def color(r: int, g: int, b: int, type: Literal['fg', 'bg'] = 'fg') -> str:
 
 def prints(
     *values: object,
-    style: Optional[Union[List[str], Callable[[str, bool], str]]] = None,
+    s: Optional[Union[List[str], Callable[[str, bool], str]]] = None,
     sep: str = ' ',
     end: str = '\n',
     file = None,
@@ -89,7 +95,7 @@ def prints(
 
     Args:
         *values (object): The values to print.
-        style (Optional[Union[List[str], Callable[[str, bool], str]]]): The style to apply to the text. (defaults to None)
+        s (Optional[Union[List[str], Callable[[str, bool], str]]]): The style to apply to the text. (defaults to None)
         sep [str]: The separator between the values. (defaults to " ")
         end [str]: The end character. (defaults to '\n')
         file: The file to write to. (defaults to None)
@@ -97,23 +103,23 @@ def prints(
     """
 
     # Set the style to empty function.
-    style_: Callable[[str, bool], str] = globals()['style']()
+    style_: Callable[[str, bool], str] = style()
 
-    if not style:
+    if not s:
         # No style was given.
         pass
-    elif type(style) in [list, tuple, set, str]:
+    elif type(s) in [list, tuple, set, str]:
         # The style is an array.
-        style_ = globals()['style'](*style)
-    elif callable(style):
+        style_ = style(*s)
+    elif callable(s):
         # The style is a function.
-        style_ = style
+        style_ = s
     else:
         # Invalid style.
         raise TypeError('Style must be an array or a function.')
 
     # Apply the style.
-    text: str = style_(sep.join([str(v) for v in values]))
+    text: str = style_(sep.join([str(v) for v in values]), p=False)
 
     # Print the text.
     print(text, sep=sep, end=end, file=file, flush=flush)
