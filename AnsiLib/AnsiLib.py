@@ -17,24 +17,24 @@ c = color
 from .utils import style
 
 # Quick styles.
-s = style('s')
-d = style('d')
-i = style('i')
-u = style('u')
-k = style('k')
-h = style('h')
-x = style('x')
-du = style('du')
-rev = style('rev')
+s: Callable[[str, bool], str] = style('s')
+d: Callable[[str, bool], str] = style('d')
+i: Callable[[str, bool], str] = style('i')
+u: Callable[[str, bool], str] = style('u')
+k: Callable[[str, bool], str] = style('k')
+h: Callable[[str, bool], str] = style('h')
+x: Callable[[str, bool], str] = style('x')
+du: Callable[[str, bool], str] = style('du')
+rev: Callable[[str, bool], str] = style('rev')
 
 # Quick colors.
-r = style('r')
-g = style('g')
-y = style('y')
-b = style('b')
-m = style('m')
-cy = style('c')
-w = style('w')
+r: Callable[[str, bool], str] = style('r')
+g: Callable[[str, bool], str] = style('g')
+y: Callable[[str, bool], str] = style('y')
+b: Callable[[str, bool], str] = style('b')
+m: Callable[[str, bool], str] = style('m')
+cy: Callable[[str, bool], str] = style('c')
+w: Callable[[str, bool], str] = style('w')
 
 def available() -> List[str]:
     """ Returns the available styles.

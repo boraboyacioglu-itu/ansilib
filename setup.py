@@ -9,12 +9,9 @@ if sys.version_info < (3, 8):
 with open('README.md', 'r') as f:
     long_description = f.read()
 
-with open('LICENSE.txt', 'r') as f:
-    licence = f.read()
-
 setup(
     name='AnsiLib',
-    version='1.0.1',
+    version='1.0.2',
     author='Bora Boyacıoğlu',
     author_email='boyacioglu20@itu.edu.tr',
     description='A library for handling ANSI codes',
@@ -27,7 +24,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    license=licence,
+    license='MIT License',
     python_requires='>=3.5',
     install_requires=extras,
 )
