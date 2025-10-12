@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0] - 2025-10-12
+### Added
+- Inline style headers at the start of each value:
+  - Long form: `$[r,b]text` (comma-separated alphanumerics).
+  - Short form: `$rtext` (single alphanumeric tag).
+- Inline headers **take precedence per value**; the overall `s=` style is applied afterwards to all values.
+
 ## [1.0.3] - 2025-10-12
 ### Removed
 - Print function of style() removed to eliminate type mismatches, as it was not a useful feature.

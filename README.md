@@ -65,6 +65,18 @@ Finally, you can use the AnsiLib's `prints()` function to print a styled text.
 al.prints("This text is bold, red and has a background color of bright black.", s=['bold', 'r', 'kb1'])
 ```
 
+The `prints()` function also supports inline style syntax for quick styling:
+```python
+al.prints("$[r]This text is red", "$[b,u]This text is blue and underlined")
+```
+
+It is also possible to use the short form for single-character styles:
+```python
+al.prints("$rThis text is red")
+```
+
+Inline syntax takes priority per value, the optional s= parameter still applies an overall style.
+
 ## Contributions
 
 I welcome contributions and suggestions to the AnsiLib Python library! Contact me about the details.

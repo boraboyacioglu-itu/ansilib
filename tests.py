@@ -54,5 +54,36 @@ class TestYourModule(unittest.TestCase):
         with self.assertRaises(TypeError):
             prints("text", s=123)
 
+    def test_prints_inline_long_syntax(self):
+        # Test long form inline syntax $[r,b]text
+        with patch('builtins.print') as mocked_print:
+            prints("$[r,b]hello world")
+            mocked_print.assert_called_once()
+            # Check that both red and bold styles applied (simplified expectation)
+            output = mocked_print.call_args[0][0]
+            self.assertIn('\x1b', output)
+            self.assertIn('hello world', output)
+
+    def test_prints_inline_short_syntax(self):
+        # Test short form inline syntax $rtext
+        with patch('builtins.print') as mocked_print:
+            prints("$rred text")
+            mocked_print.assert_called_once()
+            output = mocked_print.call_args[0][0]
+            self.assertIn('\x1b', output)
+            self.assertIn('red text', output)
+
+    def test_prints_inline_and_global_style_combined(self):
+        # Inline style should override per-value, global style applied after
+        with patch('builtins.print') as mocked_print:
+            prints("$[r]red text", "plain text", s='b')
+            mocked_print.assert_called_once()
+            args = mocked_print.call_args[0]
+            # Verify both texts printed
+            self.assertEqual(len(args), 2)
+            # Ensure first has red style, second has bold style
+            self.assertIn('red text', args[0])
+            self.assertIn('plain text', args[1])
+
 if __name__ == '__main__':
     unittest.main()

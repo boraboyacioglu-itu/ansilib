@@ -1,6 +1,7 @@
-import sys
-from typing import Callable, Dict, List, Optional, Union
 from collections.abc import Iterable
+import re
+import sys
+from typing import Any, Callable, Dict, List, Optional, Union
 
 # Import literal type for different versions of Python.
 if sys.version_info >= (3, 8):
@@ -85,17 +86,25 @@ def color(r: int, g: int, b: int, type: Literal['fg', 'bg'] = 'fg') -> str:
     
     return code
 
+# Regex patterns for inline styles.
+# $[r,b]text : header only at the very start
+_PATTERN_LONG  = re.compile(r'^\$\[([A-Za-z0-9]+(?:\s*,\s*[A-Za-z0-9]+)*)\](.*)\Z', re.S)
+# $rtext     : single 1-char style at the very start
+_PATTERN_SHORT = re.compile(r'^\$([A-Za-z0-9])(.*)\Z', re.S)
+
 def prints(
     *values: object,
     s: Optional[Union[str, List[str], Callable[[str], str]]] = None,
-    **kwargs: object
+    **kwargs: Any
 ) -> None:
-    """ Prints the given values with the given style. Sends the output to Python's print function.
+    """ Print values with inline styles.
+    Inline (per value): "$[a,b]text"  or  "$atext"  (single char), use "$$" to escape styling.
+    Fallback (overall): s="a" | s=["a","b"] | s=callable
 
     Args:
-        *values (object): The values to print.
+        *values (object): The values to print. Each value can contain inline style tags in the format "$[s1,s2,...]text".
         s (Optional[Union[str, List[str], Callable[[str], str]]]): The style to apply to the text. (defaults to None)
-        **kwargs (object): The keyword arguments to pass to the print function.
+        **kwargs (Any): The keyword arguments to pass to the print function.
     """
 
     # Set the style to empty function.
@@ -117,5 +126,40 @@ def prints(
         # Invalid style.
         raise TypeError('Style must be an array or a function.')
 
-    # Print the text.
-    print(*[style_(str(v)) for v in values], kwargs)
+    # Style each value and print them.
+    out: List[str] = []
+    for v in values:
+        text = str(v)
+        
+        # Safe way to use $ at the start of the text, by using $$.
+        if text.startswith('$$'):
+            # Don't catch any pattern.
+            out.append(text[1:])
+            continue
+
+        # Match the style tag syntax.
+        m_long : Optional[re.Match] = _PATTERN_LONG.match(text)
+        m_short: Optional[re.Match] = _PATTERN_SHORT.match(text)
+
+        tags: List[str] = []
+        body: str = text
+
+        if m_short and not m_long:
+            # Short syntax matched.
+            tags = [m_short.group(1).strip()]
+            body = m_short.group(2)
+        if m_long and not m_short:
+            # Long syntax matched.
+            tags = [t.strip() for t in m_long.group(1).split(',')]
+            body  = m_long.group(2)
+
+        # Apply the style tags.
+        for tag in tags:
+            if tag in CHARS.keys():
+                body = style(tag)(body)
+        out.append(body)
+
+    # Apply the overall style.
+    out = [style_(o) for o in out]
+
+    print(*out, **kwargs)
