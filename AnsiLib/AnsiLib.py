@@ -1,5 +1,6 @@
 import sys
 from typing import Callable, Dict, List, Optional, Union
+from collections.abc import Iterable
 
 # Import literal type for different versions of Python.
 if sys.version_info >= (3, 8):
@@ -10,31 +11,30 @@ else:
 from .chars import CHARS
 
 # Colors class.
-from .color import color
-c = color
+from .color import color as c
 
 # Styling function.
 from .utils import style
 
 # Quick styles.
-s: Callable[[str, bool], str] = style('s')
-d: Callable[[str, bool], str] = style('d')
-i: Callable[[str, bool], str] = style('i')
-u: Callable[[str, bool], str] = style('u')
-k: Callable[[str, bool], str] = style('k')
-h: Callable[[str, bool], str] = style('h')
-x: Callable[[str, bool], str] = style('x')
-du: Callable[[str, bool], str] = style('du')
-rev: Callable[[str, bool], str] = style('rev')
+s  : Callable[[str], str] = style('s')
+d  : Callable[[str], str] = style('d')
+i  : Callable[[str], str] = style('i')
+u  : Callable[[str], str] = style('u')
+k  : Callable[[str], str] = style('k')
+h  : Callable[[str], str] = style('h')
+x  : Callable[[str], str] = style('x')
+du : Callable[[str], str] = style('du')
+rev: Callable[[str], str] = style('rev')
 
 # Quick colors.
-r: Callable[[str, bool], str] = style('r')
-g: Callable[[str, bool], str] = style('g')
-y: Callable[[str, bool], str] = style('y')
-b: Callable[[str, bool], str] = style('b')
-m: Callable[[str, bool], str] = style('m')
-cy: Callable[[str, bool], str] = style('c')
-w: Callable[[str, bool], str] = style('w')
+r  : Callable[[str], str] = style('r')
+g  : Callable[[str], str] = style('g')
+y  : Callable[[str], str] = style('y')
+b  : Callable[[str], str] = style('b')
+m  : Callable[[str], str] = style('m')
+cy : Callable[[str], str] = style('c')
+w  : Callable[[str], str] = style('w')
 
 def available() -> List[str]:
     """ Returns the available styles.
@@ -87,30 +87,27 @@ def color(r: int, g: int, b: int, type: Literal['fg', 'bg'] = 'fg') -> str:
 
 def prints(
     *values: object,
-    s: Optional[Union[List[str], Callable[[str, bool], str]]] = None,
-    sep: str = ' ',
-    end: str = '\n',
-    file = None,
-    flush: bool = False
+    s: Optional[Union[str, List[str], Callable[[str], str]]] = None,
+    **kwargs: object
 ) -> None:
     """ Prints the given values with the given style. Sends the output to Python's print function.
 
     Args:
         *values (object): The values to print.
-        s (Optional[Union[List[str], Callable[[str, bool], str]]]): The style to apply to the text. (defaults to None)
-        sep [str]: The separator between the values. (defaults to " ")
-        end [str]: The end character. (defaults to '\n')
-        file: The file to write to. (defaults to None)
-        flush (bool): Whether to flush the output. (defaults to False)
+        s (Optional[Union[str, List[str], Callable[[str], str]]]): The style to apply to the text. (defaults to None)
+        **kwargs (object): The keyword arguments to pass to the print function.
     """
 
     # Set the style to empty function.
-    style_: Callable[[str, bool], str] = style()
+    style_: Callable[[str], str] = style()
 
     if not s:
         # No style was given.
         pass
-    elif type(s) in [list, tuple, set, str]:
+    elif isinstance(s, str):
+        # The style is a single string.
+        style_ = style(s)
+    elif isinstance(s, Iterable):
         # The style is an array.
         style_ = style(*s)
     elif callable(s):
@@ -120,8 +117,5 @@ def prints(
         # Invalid style.
         raise TypeError('Style must be an array or a function.')
 
-    # Apply the style.
-    text: str = style_(sep.join([str(v) for v in values]), p=False)
-
     # Print the text.
-    print(text, sep=sep, end=end, file=file, flush=flush)
+    print(*[style_(str(v)) for v in values], kwargs)

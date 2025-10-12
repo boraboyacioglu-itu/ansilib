@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Union
 import warnings
 
 from .chars import CHARS
@@ -6,7 +6,7 @@ from .chars import CHARS
 # Returns the ANSI escape sequence for the given code.
 sand: Callable[[object], str] = lambda code: '\x1b[' + str(code) + 'm'
 
-def apply(text: object, *codes: str, p: bool = False) -> Optional[str]:
+def apply(text: object, *codes: str) -> str:
     """ Applies the given styles to the text.
 
     Args:
@@ -15,7 +15,7 @@ def apply(text: object, *codes: str, p: bool = False) -> Optional[str]:
         p (bool): Whether to print the text. (defaults to False)
 
     Returns:
-        Optional[str]: The styled text if p is False.
+        str: The styled text if p is False.
     """
 
     # Check if codes only contains strings.
@@ -27,30 +27,24 @@ def apply(text: object, *codes: str, p: bool = False) -> Optional[str]:
     reset: str = sand(CHARS['reset'])
     text_: str = style_ + str(text) + reset
 
-    if not p:
-        # Return the text.
-        return text_
-    
-    print(text_)
-    return None
+    return text_
 
-def style(*styles: Union[int, Callable[[str, bool], str], str], p: bool = False) -> Callable[[str, bool], str]:
+def style(*styles: Union[int, Callable[[str], str], str]) -> Callable[[str], str]:
     """ Returns a function that applies the given styles to the text.
 
     Args:
-        *styles (Union[int, Callable[[str, bool], str], str]): The styles to apply to the text.
-        p (bool): Whether to print the text. (defaults to False)
+        *styles (Union[int, Callable[[str], str], str]): The styles to apply to the text.
 
     Returns:
-        Callable[[str, bool], str]: The function that applies the styles to the text.
+        Callable[[str], str]: The function that applies the styles to the text.
     """
 
     if not styles:
         # No styles were given.
-        return lambda text, p=p: text
+        return lambda text: text
     
     # Convert the styles to a list.
-    styles_: List[Union[int, Callable[[str, bool], str], str]] = list(styles)
+    styles_: List[Union[int, Callable[[str], str], str]] = list(styles)
 
     # Get the ANSI escape sequences for the given styles.
     codes: List[str] = []
@@ -67,8 +61,7 @@ def style(*styles: Union[int, Callable[[str, bool], str], str], p: bool = False)
             styles_.remove(sty)
 
             # Return the style with the function.
-            style_func: Callable[[str, bool], str] = lambda text, p=p: sty(style(*styles_, p=p)(text))
-            return style_func
+            return lambda text: sty(style(*styles_)(text))
         
         elif not isinstance(sty, str):
             raise TypeError("Style " + sty + " must be an integer, a string, or a callable.")
@@ -86,5 +79,4 @@ def style(*styles: Union[int, Callable[[str, bool], str], str], p: bool = False)
     codes = [sand(c) for c in codes]
     
     # Return the lambda function responsible for applying those styles.
-    style_func: Callable[[str, bool], str] = lambda text, p=p: apply(text, *codes, p=p)
-    return style_func
+    return lambda text: apply(text, *codes)

@@ -11,7 +11,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='AnsiLib',
-    version='1.0.2',
+    version='1.0.3',
     author='Bora Boyacıoğlu',
     author_email='boyacioglu20@itu.edu.tr',
     description='A library for handling ANSI codes',
